@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script src="inneractive.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <title>Most Wanted</title>
+</head>
+
+<body>
+    <!-- <button onClick="app(data)" style="font-size: 50px">Start Searching</button> -->
+    <div class="Content">
+        <div class="textPad">
+            <div class="title"><h1>Most Wanted</h1></div>
+            
+            <div class="text"><p id="userPrompt"></p></div>
+            <!-- <script>document.getElementById("userPrompt").innerHTML="Hello World";</script> -->
+            <div class="interactive">
+                <div class="start" id="start">
+                    <button onClick="start(data)" id="startButton"><p id="startText">Start Here!</p></button>
+                </div>
+                <div class="buttons" id="buttonArea">
+                    <!-- <button><p>Start Here!</p></button> -->
+                    <!-- <button><p>button2</p></button>
+                    <button><p>button3</p></button>
+                    <button><p>button4</p></button>
+                    <button><p>button3</p></button>
+                    <button><p>button4</p></button>  -->
+                </div>
+                <div class="searchBar" id="search">
+                    <!-- <input type: "text" name: "search" placeholder="type here" > -->
+                </div>
+                <!-- <script>
+                    const searchBarElement=document.getElementById("search");
+                    searchBarElement.parentNode.removeChild(searchBarElement);
+                </script> -->
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
