@@ -88,10 +88,9 @@ function idSearchLogic(){
     let data=dataList.filter(d=>d.id==text)
     // if(data.length>0){
     //     document.getElementById("userPrompt").innerHTML="Please enter the id of the person you want to search for.";
-
     // }
-    currentPerson=data[0]
-    displayInfo(currentPerson)
+    // currentPerson=data[0]
+    // displayInfo(currentPerson)
 }
 
 //----------Name Logic----------//
