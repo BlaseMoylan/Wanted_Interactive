@@ -90,7 +90,7 @@ function idSearchLogic(){
     //     document.getElementById("userPrompt").innerHTML="Please enter the id of the person you want to search for.";
     // }
     // currentPerson=data[0]
-    // displayInfo(currentPerson)
+    displayInfo(currentPerson)
 }
 
 //----------Name Logic----------//
