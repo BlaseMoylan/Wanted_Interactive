@@ -229,8 +229,13 @@ function sendToInfo(person){
 function checkforUsedButtons(){
     for(let used in usedFilter){
         let check = usedFilter[used][0].toLowerCase()
-        if(check=="eyecolor"){
-            check="eye-color"
+        switch(check){
+            case "eyeColor":
+                check="eye-color"
+                break
+            case "dob":
+                check="date-of-birth"
+                break
         }
         document.getElementById(check).disabled = true
     }
@@ -397,7 +402,7 @@ function makeButton(words,parent){
     parent=document.getElementById(parent)
     for(let option in words){
         let test=document.createElement("BUTTON")
-        test.setAttribute("id",words[option].toLowerCase().trim().replace(" ","-"))
+        test.setAttribute("id",words[option].toLowerCase().trim().replace(/ +/g,"-"))
         test.setAttribute("class","button-style")
         let text=document.createElement("P")
         text.innerHTML=words[option]
@@ -409,7 +414,7 @@ function makeButton(words,parent){
 
 function addListener(options){
     for(let option in options){
-        option = options[option].toLowerCase().trim().replace(" ","-")
+        option = options[option].toLowerCase().trim().replace(/ +/g,"-")
         document.getElementById(option).addEventListener("click",()=>directory(option))
     }
 }
