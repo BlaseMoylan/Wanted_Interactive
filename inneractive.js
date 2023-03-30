@@ -44,10 +44,10 @@ function directory(selection){
             usedFilter = []
             searchWithTraits()
             break
-        case "search id":
+        case "search-id":
             idSearchLogic()
             break
-        case "search name":
+        case "search-name":
             nameSearchLogic()
             break
         case "family":
@@ -62,6 +62,7 @@ function directory(selection){
             peopleResults("descendants",descendants)
             break
         case "restart":
+            deleteChildren("menuArea")
             deleteChildren("buttonArea")
             searchDataSet()
             break
@@ -190,7 +191,7 @@ function descendantSearch(searchedPerson,people){
 //----------Trait Logic----------//
 
 function searchWithTraits(filterList = []){
-    let options=["Gender","Date of Birth","Height","Weight","Eye Color","Occupation", "Reset","Restart"]
+    let options=["Gender","Date of Birth","Height","Weight","Eye Color","Occupation"]
     deleteChildren("buttonArea")
     deleteChildren("textArea")
     let message = "Select trait to filter by."
@@ -214,6 +215,9 @@ function searchWithTraits(filterList = []){
     makeButton(options,"buttonArea")
     checkforUsedButtons()
     addListener(options)
+    options = ["Reset","Restart"]
+    makeButton(options,"menuArea")
+    addListener(options)
 }
 
 function sendToInfo(person){
@@ -224,7 +228,11 @@ function sendToInfo(person){
 
 function checkforUsedButtons(){
     for(let used in usedFilter){
-        document.getElementById(usedFilter[used][0]).disabled = true
+        let check = usedFilter[used][0].toLowerCase()
+        if(check=="eyecolor"){
+            check="eye-color"
+        }
+        document.getElementById(check).disabled = true
     }
 }
 
@@ -233,27 +241,31 @@ function traitDirectory(selection){
         case "submit":
             let radioButtons = document.querySelectorAll('input[name="filter"]')
             result = filterList(radioButtons)
+            deleteChildren("menuArea")
             deleteChildren("radioArea")
             searchWithTraits(result)
             break
         case "back":
+            deleteChildren("menuArea")
             deleteChildren("radioArea")
             usedFilter.pop()
             searchWithTraits()
             break
         case "reset":
             usedFilter = []
+            deleteChildren("menuArea")
             searchWithTraits()
             break
         default:
             switch(selection){
-                case "date of birth":
+                case "date-of-birth":
                     selection = "dob"
                     break
-                case "eye color":
+                case "eye-color":
                     selection = "eyeColor"
                     break
             }
+            deleteChildren("menuArea")
             searchTraitLogic(selection)
     }
 }
@@ -268,24 +280,35 @@ function filterList(radioButtons){
         }
     }
 
-    let filterList = [...dataList]
+    return filterMe()
+}
+
+function filterMe(minusOne=false){
+    filterDownOptions = [...dataList]
     if(usedFilter.length>0){
         for(let used in usedFilter){
-            filterList = filterList.filter(p => p[usedFilter[used][0]]==usedFilter[used][1])
+            if (minusOne && used == usedFilter.length-1){
+                break
+            }
+            filterDownOptions = filterDownOptions.filter(p => p[usedFilter[used][0]]==usedFilter[used][1])
         }
     }
-    return filterList
+    return filterDownOptions
 }
 
 function searchTraitLogic(selection){
     usedFilter.push([selection])
-    let options=dataList.map(person=>person[selection]).filter(function(value,index,filterMappedArray){return filterMappedArray.indexOf(value) === index})
+    let options = [...dataList]
+    if(usedFilter[0][1]){
+        options = filterMe(true)
+    }
+    options = options.map(person=>person[selection]).filter(function(value,index,filterMappedArray){return filterMappedArray.indexOf(value) === index})
     deleteChildren("textArea")
     deleteChildren("buttonArea")
     makeParagraphTag("Select option to filter by:")
     makeRadioButton(options,"radioArea")
     let buttonMenu = ["Submit", "Back"]
-    makeButton(buttonMenu, "buttonArea")
+    makeButton(buttonMenu, "menuArea")
     addListener(buttonMenu)
 }
 
@@ -374,7 +397,7 @@ function makeButton(words,parent){
     parent=document.getElementById(parent)
     for(let option in words){
         let test=document.createElement("BUTTON")
-        test.setAttribute("id",words[option].toLowerCase().trim())
+        test.setAttribute("id",words[option].toLowerCase().trim().replace(" ","-"))
         test.setAttribute("class","button-style")
         let text=document.createElement("P")
         text.innerHTML=words[option]
@@ -386,7 +409,7 @@ function makeButton(words,parent){
 
 function addListener(options){
     for(let option in options){
-        option = options[option].toLowerCase().trim()
+        option = options[option].toLowerCase().trim().replace(" ","-")
         document.getElementById(option).addEventListener("click",()=>directory(option))
     }
 }
