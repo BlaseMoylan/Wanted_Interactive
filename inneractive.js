@@ -10,7 +10,8 @@ function start(people){
 }
 
 function welcome(){
-    document.getElementById("userPrompt").innerHTML="Welcome to most wanted\n click the button to begin";
+    makeParagraphTag("Welcome to Most Wanted!")
+    makeParagraphTag("Click the button to begin")
     document.getElementById("startText").innerHTML="Continue";
     document.getElementById("startButton").setAttribute("onclick","continueSearch()")
 
@@ -22,8 +23,9 @@ function continueSearch(){
 }
 
 function searchDataSet(){
-    document.getElementById("userPrompt").innerHTML="Select search type.";
-    let options=["id","name","traits"]
+    deleteChildren("textArea")
+    makeParagraphTag("Select search type.")
+    let options=["ID","Name","Traits"]
     makeButton(options,"buttonArea")
     addListener(options)
 }
@@ -42,10 +44,10 @@ function directory(selection){
             usedFilter = []
             searchWithTraits()
             break
-        case "search_ID":
+        case "search id":
             idSearchLogic()
             break
-        case "search_Name":
+        case "search name":
             nameSearchLogic()
             break
         case "family":
@@ -74,41 +76,57 @@ function directory(selection){
 
 //----------ID Logic----------//
 
-function searchWithId(){
-    console.log("chose id")
+function searchWithId(deleteTextArea=true){
     deleteChildren("buttonArea")
-    document.getElementById("userPrompt").innerHTML="Please enter the id of the person you want to search for.";
+    if(deleteTextArea){
+        deleteChildren("textArea")
+        makeParagraphTag("Please enter the id of the person you want to search for.")
+    }
     makeSearchBar("searchText")
-    makeButton(["search_ID"],"searchArea")
-    addListener(["search_ID"])
+    let text = ["Search ID"]
+    makeButton(text,"searchArea")
+    addListener(text)
 }
 
 function idSearchLogic(){
-    let text=document.getElementById("searchText").value;
+    let text=document.getElementById("searchText").value.trim();
     let data=dataList.filter(d=>d.id==text)
-    // if(data.length>0){
-    //     document.getElementById("userPrompt").innerHTML="Please enter the id of the person you want to search for.";
-    // }
-    // currentPerson=data[0]
-    displayInfo(currentPerson)
+    if(data.length<=0){
+        makeParagraphTag("No Match: "+text)
+        deleteChildren("searchArea")
+        searchWithId(false)
+    }else{
+        currentPerson=data[0]
+        displayInfo(currentPerson)
+    }
 }
 
 //----------Name Logic----------//
 
-function searchWithName(){
-    console.log("chose name")
+function searchWithName(deleteTextArea=true){
     deleteChildren("buttonArea")
-    document.getElementById("userPrompt").innerHTML="Please enter the first and last name of the person you want to search for.";
+    if(deleteTextArea){
+        deleteChildren("textArea")
+        makeParagraphTag("Please enter the first and last name of the person you want to search for.")
+    }
     makeSearchBar("searchText")
-    makeButton(["search_Name"],"searchArea")
-    addListener(["search_Name"])
+    let text = ["Search Name"]
+    makeButton(text,"searchArea")
+    addListener(text)
 }
 
 function nameSearchLogic(){
-    let text=document.getElementById("searchText").value.toLowerCase();
+    let text=document.getElementById("searchText").value.toLowerCase().trim().replace(/ +/g," ");
     let data=dataList.filter(d=>(d.firstName+" "+d.lastName).toLowerCase()==text)
-    currentPerson=data[0]
-    displayInfo(currentPerson)
+    if(data.length<=0){
+        makeParagraphTag("No Match: "+text)
+        deleteChildren("searchArea")
+        searchWithName(false)
+    }else{
+        currentPerson=data[0]
+        displayInfo(currentPerson)
+    }
+
 }
 
 //----------Family search Logic----------//
@@ -142,7 +160,7 @@ function familySearchLogic(){
     family = family.concat(currentPerson.currentSpouse != null ? findSpouse(currentPerson, dataList) : [])
     family = family.concat(findSibling(currentPerson, dataList))
     deleteChildren("buttonArea")
-    let options=["info","descendants","restart"]
+    let options=["Info","Descendants","Restart"]
     makeButton(options,"buttonArea")
     addListener(options)
     peopleResults("family",family)
@@ -172,29 +190,27 @@ function descendantSearch(searchedPerson,people){
 //----------Trait Logic----------//
 
 function searchWithTraits(filterList = []){
-    let options=["gender","date of birth","height","weight","eyeColor","occupation", "reset","restart"]
+    let options=["Gender","Date of Birth","Height","Weight","Eye Color","Occupation", "Reset","Restart"]
     deleteChildren("buttonArea")
-    let message = "select Trait to filter by."
+    deleteChildren("textArea")
+    let message = "Select trait to filter by."
     if(filterList.length>0){
-        document.getElementById("userPrompt").innerHTML = ""
         let people = filterList.map(p=>p.firstName+" "+p.lastName)
         for(let person in people){
-            let parent = document.getElementById("userPrompt")
+            let parent = document.getElementById("textArea")
+            let line = document.createElement("DIV")
             let personButton = document.createElement("BUTTON")
             personButton.addEventListener("click", () => sendToInfo(people[person]))
             personButton.setAttribute("class","button-style-people")
             let text=document.createElement("P")
             text.innerHTML=people[person]
             personButton.appendChild(text)
-            parent.appendChild(personButton)
+            line.appendChild(personButton)
+            parent.appendChild(line)
         }
-        let message = document.createElement("P")
-        message.innerHTML = "select Trait to filter by."
-        document.getElementById("userPrompt").appendChild(message)
     }
-    else{
-        document.getElementById("userPrompt").innerHTML = message
-    }
+
+    makeParagraphTag(message)
     makeButton(options,"buttonArea")
     checkforUsedButtons()
     addListener(options)
@@ -230,6 +246,14 @@ function traitDirectory(selection){
             searchWithTraits()
             break
         default:
+            switch(selection){
+                case "date of birth":
+                    selection = "dob"
+                    break
+                case "eye color":
+                    selection = "eyeColor"
+                    break
+            }
             searchTraitLogic(selection)
     }
 }
@@ -256,11 +280,11 @@ function filterList(radioButtons){
 function searchTraitLogic(selection){
     usedFilter.push([selection])
     let options=dataList.map(person=>person[selection]).filter(function(value,index,filterMappedArray){return filterMappedArray.indexOf(value) === index})
-
+    deleteChildren("textArea")
     deleteChildren("buttonArea")
-    document.getElementById("userPrompt").innerHTML = "Select option to filter by."
+    makeParagraphTag("Select option to filter by:")
     makeRadioButton(options,"radioArea")
-    let buttonMenu = ["submit", "back"]
+    let buttonMenu = ["Submit", "Back"]
     makeButton(buttonMenu, "buttonArea")
     addListener(buttonMenu)
 }
@@ -268,26 +292,34 @@ function searchTraitLogic(selection){
 //----------Display Text Area Logic----------//
 
 function displayInfo(person){
-    let personInfo = `Name: ${person.firstName} ${person.lastName}\nGender: ${person.gender}\nDate of Birth: ${person.dob}\nHeight: ${person.height}\nWeight: ${person.weight}\nEye Color: ${person.eyeColor}\nOccupation: ${person.occupation}`
-    document.getElementById("userPrompt").innerHTML=personInfo
+    let personInfo = `Name: ${person.firstName} ${person.lastName},Gender: ${person.gender},Date of Birth: ${person.dob},Height: ${person.height},Weight: ${person.weight},Eye Color: ${person.eyeColor},Occupation: ${person.occupation}`.split(',')
     deleteChildren("searchArea")
-    let newOptions=["family","descendants","restart"]
-    makeButton(newOptions,"buttonArea")
-    addListener(newOptions)
+    deleteChildren("textArea")
+    deleteChildren("buttonArea")
+    for(let detail in personInfo){
+        makeParagraphTag(personInfo[detail])
+    }
+    let options=["Family","Descendants","Restart"]
+    makeButton(options,"buttonArea")
+    addListener(options)
 }
 
 function peopleResults(displayTitle, peopleToDisplay) {
+    deleteChildren("textArea")
     let formatedPeopleDisplayText
     if(peopleToDisplay.length == 0){
-        formatedPeopleDisplayText = "None"
+        formatedPeopleDisplayText = ["None"]
     }
     else if(peopleToDisplay[0].hasOwnProperty("relationship")){
-        formatedPeopleDisplayText = peopleToDisplay.map(person => `${person.relationship}: ${person.firstName} ${person.lastName}`).join('\n');
+        formatedPeopleDisplayText = peopleToDisplay.map(person => `${person.relationship}: ${person.firstName} ${person.lastName}`);
     }
     else{
-        formatedPeopleDisplayText = peopleToDisplay.map(person => `${person.firstName} ${person.lastName}`).join('\n');
+        formatedPeopleDisplayText = peopleToDisplay.map(person => `${person.firstName} ${person.lastName}`);
     }
-    document.getElementById("userPrompt").innerHTML=`${displayTitle}\n\n${formatedPeopleDisplayText}`;
+    makeParagraphTag(displayTitle)
+    for(let info in formatedPeopleDisplayText){
+        makeParagraphTag(formatedPeopleDisplayText[info])
+    }
 }
 
 //----------Make and delete Element----------//
@@ -297,6 +329,13 @@ function deleteChildren(parent){
     while(parent.firstChild){
         parent.removeChild(parent.firstChild)
     }
+}
+
+function makeParagraphTag(message){
+    parent = document.getElementById("textArea")
+    let paragraph = document.createElement("P")
+    paragraph.innerHTML = message
+    parent.appendChild(paragraph)
 }
 
 function makeSearchBar(idName){
@@ -319,7 +358,11 @@ function makeRadioButton(options,parent){
         test.setAttribute("value",options[option])
         test.setAttribute("class","radio-button-style")
         let text=document.createElement("label")
-        text.innerHTML=options[option]
+        let showText = options[option]
+        if(!Number.isInteger(showText)){
+            showText = showText.charAt(0).toUpperCase() + showText.slice(1)
+        }
+        text.innerHTML= showText
         line.appendChild(test)
         line.appendChild(text)
         parent.appendChild(line)
@@ -331,7 +374,7 @@ function makeButton(words,parent){
     parent=document.getElementById(parent)
     for(let option in words){
         let test=document.createElement("BUTTON")
-        test.setAttribute("id",words[option])
+        test.setAttribute("id",words[option].toLowerCase().trim())
         test.setAttribute("class","button-style")
         let text=document.createElement("P")
         text.innerHTML=words[option]
@@ -343,6 +386,7 @@ function makeButton(words,parent){
 
 function addListener(options){
     for(let option in options){
-        document.getElementById(options[option]).addEventListener("click",()=>directory(options[option]))
+        option = options[option].toLowerCase().trim()
+        document.getElementById(option).addEventListener("click",()=>directory(option))
     }
 }
